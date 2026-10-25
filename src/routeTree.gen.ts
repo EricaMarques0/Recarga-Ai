@@ -10,33 +10,115 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AjudaRouteImport } from './routes/ajuda'
+import { Route as CartoesRouteImport } from './routes/cartoes'
+import { Route as ConfirmacaoRouteImport } from './routes/confirmacao'
+import { Route as HistoricoRouteImport } from './routes/historico'
+import { Route as PagamentoRouteImport } from './routes/pagamento'
+import { Route as ValorRouteImport } from './routes/valor'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AjudaRoute = AjudaRouteImport.update({
+  id: '/ajuda',
+  path: '/ajuda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartoesRoute = CartoesRouteImport.update({
+  id: '/cartoes',
+  path: '/cartoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfirmacaoRoute = ConfirmacaoRouteImport.update({
+  id: '/confirmacao',
+  path: '/confirmacao',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistoricoRoute = HistoricoRouteImport.update({
+  id: '/historico',
+  path: '/historico',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PagamentoRoute = PagamentoRouteImport.update({
+  id: '/pagamento',
+  path: '/pagamento',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ValorRoute = ValorRouteImport.update({
+  id: '/valor',
+  path: '/valor',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ajuda': typeof AjudaRoute
+  '/cartoes': typeof CartoesRoute
+  '/confirmacao': typeof ConfirmacaoRoute
+  '/historico': typeof HistoricoRoute
+  '/pagamento': typeof PagamentoRoute
+  '/valor': typeof ValorRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ajuda': typeof AjudaRoute
+  '/cartoes': typeof CartoesRoute
+  '/confirmacao': typeof ConfirmacaoRoute
+  '/historico': typeof HistoricoRoute
+  '/pagamento': typeof PagamentoRoute
+  '/valor': typeof ValorRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ajuda': typeof AjudaRoute
+  '/cartoes': typeof CartoesRoute
+  '/confirmacao': typeof ConfirmacaoRoute
+  '/historico': typeof HistoricoRoute
+  '/pagamento': typeof PagamentoRoute
+  '/valor': typeof ValorRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/ajuda'
+    | '/cartoes'
+    | '/confirmacao'
+    | '/historico'
+    | '/pagamento'
+    | '/valor'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/ajuda'
+    | '/cartoes'
+    | '/confirmacao'
+    | '/historico'
+    | '/pagamento'
+    | '/valor'
+  id:
+    | '__root__'
+    | '/'
+    | '/ajuda'
+    | '/cartoes'
+    | '/confirmacao'
+    | '/historico'
+    | '/pagamento'
+    | '/valor'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AjudaRoute: typeof AjudaRoute
+  CartoesRoute: typeof CartoesRoute
+  ConfirmacaoRoute: typeof ConfirmacaoRoute
+  HistoricoRoute: typeof HistoricoRoute
+  PagamentoRoute: typeof PagamentoRoute
+  ValorRoute: typeof ValorRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +130,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ajuda': {
+      id: '/ajuda'
+      path: '/ajuda'
+      fullPath: '/ajuda'
+      preLoaderRoute: typeof AjudaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cartoes': {
+      id: '/cartoes'
+      path: '/cartoes'
+      fullPath: '/cartoes'
+      preLoaderRoute: typeof CartoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/confirmacao': {
+      id: '/confirmacao'
+      path: '/confirmacao'
+      fullPath: '/confirmacao'
+      preLoaderRoute: typeof ConfirmacaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/historico': {
+      id: '/historico'
+      path: '/historico'
+      fullPath: '/historico'
+      preLoaderRoute: typeof HistoricoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pagamento': {
+      id: '/pagamento'
+      path: '/pagamento'
+      fullPath: '/pagamento'
+      preLoaderRoute: typeof PagamentoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/valor': {
+      id: '/valor'
+      path: '/valor'
+      fullPath: '/valor'
+      preLoaderRoute: typeof ValorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AjudaRoute: AjudaRoute,
+  CartoesRoute: CartoesRoute,
+  ConfirmacaoRoute: ConfirmacaoRoute,
+  HistoricoRoute: HistoricoRoute,
+  PagamentoRoute: PagamentoRoute,
+  ValorRoute: ValorRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
