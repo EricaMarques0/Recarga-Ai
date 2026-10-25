@@ -6,7 +6,7 @@ import { CardBadge, PageTitle, PrimaryButton, Steps, SummaryRow } from "@/compon
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/valor")({
-  validateSearch: (s: Record<string, unknown>) => ({ card: String(s.card ?? "") }),
+  validateSearch: (s: Record<string, unknown>) => ({ card: String(s["card"] ?? "") }),
   beforeLoad: ({ search }) => {
     if (!getCard(search.card)) throw redirect({ to: "/cartoes", search: { q: undefined } });
   },

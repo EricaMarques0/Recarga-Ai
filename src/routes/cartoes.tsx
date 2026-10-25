@@ -6,7 +6,7 @@ import { CardBadge, DemoTag, PageTitle, PrimaryButton, Steps } from "@/component
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/cartoes")({
-  validateSearch: (s: Record<string, unknown>) => ({ q: typeof s.q === "string" ? s.q : undefined }),
+  validateSearch: (s: Record<string, unknown>) => ({ q: typeof s["q"] === "string" ? s["q"] : undefined }),
   head: () => ({
     meta: [
       { title: "Escolha seu cartão — RecargaAí" },

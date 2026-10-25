@@ -49,7 +49,7 @@ function Index() {
       <section>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-navy">Cartões populares</h2>
-          <Link to="/cartoes" className="text-sm font-medium text-primary">Ver todos</Link>
+          <Link to="/cartoes" search={{ q: undefined }} className="text-sm font-medium text-primary">Ver todos</Link>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           {POPULAR.map((id) => {

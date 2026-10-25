@@ -6,7 +6,7 @@ import { DemoTag, PageTitle, PrimaryButton, Steps } from "@/components/app-ui";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/pagamento")({
-  validateSearch: (s: Record<string, unknown>) => ({ card: String(s.card ?? ""), amount: Number(s.amount) }),
+  validateSearch: (s: Record<string, unknown>) => ({ card: String(s["card"] ?? ""), amount: Number(s["amount"]) }),
   beforeLoad: ({ search }) => {
     if (!getCard(search.card) || !validateAmount(String(search.amount).replace(".", ",")).value)
       throw redirect({ to: "/cartoes", search: { q: undefined } });
@@ -29,7 +29,7 @@ function FakeQr() {
     let seed = 7;
     const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
     const finder = (x: number, y: number) =>
-      [[0, 0], [n - 7, 0], [0, n - 7]].some(([fx, fy]) => x >= fx && x < fx + 7 && y >= fy && y < fy + 7);
+      ([[0, 0], [n - 7, 0], [0, n - 7]] as [number, number][]).some(([fx, fy]) => x >= fx && x < fx + 7 && y >= fy && y < fy + 7);
     const out: { x: number; y: number }[] = [];
     for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (!finder(x, y) && rnd() > 0.52) out.push({ x, y });
     return out;

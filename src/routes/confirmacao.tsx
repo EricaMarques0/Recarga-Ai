@@ -6,9 +6,9 @@ import { DemoTag, PrimaryButton, Steps, SummaryRow } from "@/components/app-ui";
 
 export const Route = createFileRoute("/confirmacao")({
   validateSearch: (s: Record<string, unknown>) => ({
-    card: String(s.card ?? ""),
-    amount: Number(s.amount),
-    id: String(s.id ?? "RA-DEMO"),
+    card: String(s["card"] ?? ""),
+    amount: Number(s["amount"]),
+    id: String(s["id"] ?? "RA-DEMO"),
   }),
   beforeLoad: ({ search }) => {
     if (!getCard(search.card) || !(search.amount > 0)) throw redirect({ to: "/" });
