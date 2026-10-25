@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { PageTitle } from "@/components/app-ui";
+import { PageTitle } from "@/components/recarga-ui";
 
 export const Route = createFileRoute("/ajuda")({
   head: () => ({

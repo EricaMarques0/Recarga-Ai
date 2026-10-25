@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { brl, getCard, HISTORY } from "@/lib/data";
-import { CardBadge, DemoTag, PageTitle } from "@/components/app-ui";
+import { brl, getCard, HISTORY } from "@/lib/catalog";
+import { CardBadge, DemoTag, PageTitle } from "@/components/recarga-ui";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/historico")({

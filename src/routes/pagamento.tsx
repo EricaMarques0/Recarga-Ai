@@ -1,8 +1,8 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { Check, Copy, Loader2, Clock, Info } from "lucide-react";
 import { useMemo, useState } from "react";
-import { brl, getCard, validateAmount } from "@/lib/data";
-import { DemoTag, PageTitle, PrimaryButton, Steps } from "@/components/app-ui";
+import { brl, getCard, validateAmount } from "@/lib/catalog";
+import { DemoTag, PageTitle, PrimaryButton, Steps } from "@/components/recarga-ui";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/pagamento")({
@@ -84,7 +84,7 @@ function PixPage() {
         <div
           className={cn(
             "mx-auto mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium",
-            status === "paid" ? "bg-secondary text-secondary-foreground" : "bg-warning-soft text-navy",
+            status === "paid" ? "bg-secondary text-secondary-foreground" : "bg-cream text-navy ring-1 ring-navy/10",
           )}
         >
           {status === "waiting" && <><Clock className="h-4 w-4" /> Aguardando pagamento</>}
@@ -114,8 +114,8 @@ function PixPage() {
         </div>
       </div>
 
-      <div className="mt-4 flex gap-2 rounded-xl bg-warning-soft p-3 text-sm text-navy">
-        <Info className="mt-0.5 h-4 w-4 shrink-0" />
+      <div className="mt-4 flex gap-2 rounded-xl bg-cream p-3 text-sm text-navy ring-1 ring-navy/10">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
         Ambiente de protótipo: nenhuma cobrança real é gerada.
       </div>
 

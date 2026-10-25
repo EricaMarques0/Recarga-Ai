@@ -1,21 +1,28 @@
-# Routes
+# Rotas
 
-TanStack Start uses **file-based routing**. Every `.tsx` file in this directory
-defines a route. Do **not** create `src/pages/`, `src/routes/_app/index.tsx`, or
-`app/layout.tsx` — those are Next.js / Remix conventions. The only root layout
-is `src/routes/__root.tsx`.
+O TanStack Start usa rotas por arquivo. Cada `.tsx` desta pasta é uma página. Não crie `src/pages/` nem `app/layout.tsx`: o layout de todas as telas é `src/routes/__root.tsx`, que precisa continuar renderizando `<Outlet />`.
 
-## Conventions
+## Páginas do RecargaAí
 
-| File | URL |
+| Arquivo | Caminho |
 | --- | --- |
 | `index.tsx` | `/` |
-| `about.tsx` | `/about` |
-| `users/index.tsx` | `/users` |
-| `users/$id.tsx` | `/users/:id` (dynamic — bare `$`, no curly braces) |
-| `posts/{-$category}.tsx` | `/posts/:category?` (optional segment) |
-| `files/$.tsx` | `/files/*` (splat — read via `_splat` param, never `*`) |
-| `_layout.tsx` | layout route (renders children via `<Outlet />`) |
-| `__root.tsx` | app shell — wraps every page; preserve `<Outlet />` |
+| `cartoes.tsx` | `/cartoes` |
+| `valor.tsx` | `/valor` |
+| `pagamento.tsx` | `/pagamento` |
+| `confirmacao.tsx` | `/confirmacao` |
+| `historico.tsx` | `/historico` |
+| `ajuda.tsx` | `/ajuda` |
+| `__root.tsx` | envolve todas as páginas |
 
-`routeTree.gen.ts` is auto-generated. Don't edit it by hand.
+`routeTree.gen.ts` é gerado pelo roteador. Não edite esse arquivo à mão.
+
+## Convenção, se uma rota nova for criada
+
+| Arquivo | Caminho |
+| --- | --- |
+| `index.tsx` | `/` |
+| `sobre.tsx` | `/sobre` |
+| `usuarios/index.tsx` | `/usuarios` |
+| `usuarios/$id.tsx` | `/usuarios/:id` |
+| `_layout.tsx` | layout que renderiza os filhos com `<Outlet />` |

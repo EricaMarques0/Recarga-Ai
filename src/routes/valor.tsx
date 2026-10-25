@@ -1,8 +1,8 @@
 import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import { AlertCircle } from "lucide-react";
 import { useState } from "react";
-import { brl, getCard, PRESET_AMOUNTS, validateAmount } from "@/lib/data";
-import { CardBadge, PageTitle, PrimaryButton, Steps, SummaryRow } from "@/components/app-ui";
+import { brl, getCard, PRESET_AMOUNTS, validateAmount } from "@/lib/catalog";
+import { CardBadge, PageTitle, PrimaryButton, Steps, SummaryRow } from "@/components/recarga-ui";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/valor")({

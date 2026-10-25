@@ -1,8 +1,8 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { CheckCircle2, FileText, Info, X } from "lucide-react";
 import { useState } from "react";
-import { brl, getCard } from "@/lib/data";
-import { DemoTag, PrimaryButton, Steps, SummaryRow } from "@/components/app-ui";
+import { brl, getCard } from "@/lib/catalog";
+import { DemoTag, PrimaryButton, Steps, SummaryRow } from "@/components/recarga-ui";
 
 export const Route = createFileRoute("/confirmacao")({
   validateSearch: (s: Record<string, unknown>) => ({

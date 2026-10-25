@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { validateAmount } from "@/lib/data";
+import { validateAmount } from "@/lib/catalog";
 describe("validateAmount", () => {
   it("rejects empty", () => expect(validateAmount("").error).toBeDefined());
   it("rejects below R$5", () => expect(validateAmount("4,99").error).toBeDefined());

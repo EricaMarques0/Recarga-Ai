@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { CheckCircle2, Search } from "lucide-react";
 import { useMemo, useState } from "react";
-import { CARDS, type Category } from "@/lib/data";
-import { CardBadge, DemoTag, PageTitle, PrimaryButton, Steps } from "@/components/app-ui";
+import { CARDS, type Category } from "@/lib/catalog";
+import { CardBadge, DemoTag, PageTitle, PrimaryButton, Steps } from "@/components/recarga-ui";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/cartoes")({
