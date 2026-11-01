@@ -1,8 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, Banknote, CreditCard, QrCode, Search, ShieldCheck } from "lucide-react";
-import { useState } from "react";
-import { CARDS } from "@/lib/catalog";
-import { CardBadge, DemoTag } from "@/components/recarga-ui";
+import { ArrowRight, Banknote, Clock, CreditCard, QrCode, Search, ShieldCheck, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { brl, CARDS, getCard, maskNumber } from "@/lib/catalog";
+import { expireDue, formatRemaining, remainingMs, removeSavedCard, resolveStatus } from "@/lib/wallet";
+import { useWallet } from "@/hooks/use-wallet";
+import { CardBadge, primaryButtonClass } from "@/components/recarga-ui";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
@@ -33,13 +35,39 @@ const STOPS = [
   {
     icon: QrCode,
     title: "Pagamento via Pix",
-    text: "Um Pix ilustrativo fecha o caminho. Nada aqui gera cobrança real.",
+    text: "O código fica disponível por alguns minutos. A confirmação e o comprovante aparecem em seguida.",
   },
 ];
 
+function PendingClock({ expiresAt }: { expiresAt: string }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+  useEffect(() => {
+    if (remainingMs(expiresAt, now) <= 0) expireDue(now);
+  }, [expiresAt, now]);
+  const left = remainingMs(expiresAt, now);
+  if (left <= 0) return null;
+  return <span className="font-mono text-sm">Expira em {formatRemaining(left)}</span>;
+}
+
 function Index() {
   const [q, setQ] = useState("");
+  const [pendingRemoval, setPendingRemoval] = useState<string | null>(null);
   const navigate = useNavigate();
+  const wallet = useWallet();
+  const suggestions = useMemo(() => {
+    const term = q.trim().toLowerCase();
+    if (!term) return [];
+    return CARDS.filter((c) => [c.name, c.region, c.operator].some((f) => f.toLowerCase().includes(term))).slice(0, 5);
+  }, [q]);
+  const pending = wallet?.recharges.find((r) => resolveStatus(r) === "aguardando");
+  const pendingCard = pending ? getCard(pending.catalogId) : undefined;
+  const last = wallet?.recharges.find((r) => r.status === "confirmada");
+  const lastCard = last ? getCard(last.catalogId) : undefined;
+  const lastSaved = last ? wallet?.cards.find((c) => c.id === last.savedCardId) : undefined;
   return (
     <div className="space-y-14 pb-4">
       <section className="relative rounded-[2rem] bg-cream shadow-card">
@@ -84,6 +112,10 @@ function Index() {
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Busque por cartão, cidade ou operadora"
+                role="combobox"
+                aria-expanded={suggestions.length > 0}
+                aria-controls="sugestoes-cartao"
+                aria-autocomplete="list"
                 className="h-14 w-full rounded-full border border-navy/10 bg-white pl-14 pr-5 text-base font-medium text-navy shadow-[0_12px_30px_-18px_oklch(0.327_0.051_173.1/0.45)] outline-none transition placeholder:font-normal placeholder:text-navy/40 focus:border-primary focus:ring-4 focus:ring-primary/15 sm:h-16 sm:pr-32"
               />
               <button
@@ -93,6 +125,31 @@ function Index() {
                 Buscar
               </button>
             </div>
+            {suggestions.length > 0 && (
+              <ul
+                id="sugestoes-cartao"
+                role="listbox"
+                className="absolute z-10 mt-2 w-full overflow-hidden rounded-3xl bg-white py-2 shadow-card ring-1 ring-navy/10"
+              >
+                {suggestions.map((c) => (
+                  <li key={c.id} role="option" aria-selected={false}>
+                    <Link
+                      to="/cartao"
+                      search={{ card: c.id, saved: undefined }}
+                      className="flex items-center gap-3 px-4 py-2.5 hover:bg-cream"
+                    >
+                      <CardBadge card={c} size="sm" />
+                      <span className="min-w-0">
+                        <span className="block truncate font-bold text-navy">{c.name}</span>
+                        <span className="block truncate text-sm text-muted-foreground">
+                          {c.region} · {c.operator}
+                        </span>
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
           </form>
 
           <p className="mt-5 inline-flex items-center gap-2 rounded-full bg-white py-1.5 pl-1.5 pr-4 text-sm font-bold text-navy shadow-sm ring-1 ring-navy/10">
@@ -103,6 +160,114 @@ function Index() {
           </p>
         </div>
       </section>
+
+      {pending && pendingCard && (
+        <section className="card-surface flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
+          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-cream text-navy">
+            <Clock className="h-5 w-5" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="font-extrabold text-navy">Pix em aberto</p>
+            <p className="mt-0.5 truncate text-sm text-muted-foreground">
+              {pending.nickname} · {pendingCard.name} · {brl(pending.amount)}
+            </p>
+            <p className="mt-1 text-navy/80">
+              <PendingClock expiresAt={pending.expiresAt} />
+            </p>
+          </div>
+          <Link to="/pagamento" search={{ id: pending.id }} className={cn(primaryButtonClass, "sm:w-auto")}>
+            Continuar pagamento
+          </Link>
+        </section>
+      )}
+
+      {last && lastCard && lastSaved && (
+        <section className="rounded-[1.6rem] bg-navy p-5 text-cream shadow-card sm:p-6">
+          <p className="text-sm font-bold text-warning">Repetir recarga</p>
+          <p className="mt-1 text-2xl font-extrabold tracking-tight">{last.nickname}</p>
+          <p className="mt-1 text-sm text-cream/75">
+            {lastCard.name} · {maskNumber(last.number)} · {brl(last.amount)}
+          </p>
+          <Link
+            to="/valor"
+            search={{ card: last.catalogId, saved: last.savedCardId, amount: last.amount }}
+            className="mt-4 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-warning px-5 font-bold text-navy transition hover:brightness-105"
+          >
+            Repetir {brl(last.amount).replace(",00", "")}
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </section>
+      )}
+
+      {wallet && wallet.cards.length > 0 && (
+        <section>
+          <h2 className="text-2xl font-extrabold tracking-tight text-navy md:text-3xl">Seus cartões</h2>
+          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {wallet.cards.map((saved) => {
+              const c = getCard(saved.catalogId);
+              if (!c) return null;
+              if (pendingRemoval === saved.id) {
+                return (
+                  <div key={saved.id} className="rounded-[1.5rem] bg-card p-4 shadow-card ring-1 ring-navy/5">
+                    <p className="font-extrabold text-navy">Remover {saved.nickname}?</p>
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                      O cartão sai desta lista. As recargas já feitas continuam no histórico.
+                    </p>
+                    <div className="mt-4 grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setPendingRemoval(null)}
+                        className="h-11 rounded-2xl border border-border font-semibold text-navy"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          removeSavedCard(saved.id);
+                          setPendingRemoval(null);
+                        }}
+                        className="h-11 rounded-2xl bg-destructive font-semibold text-destructive-foreground"
+                      >
+                        Remover
+                      </button>
+                    </div>
+                  </div>
+                );
+              }
+              return (
+                <div
+                  key={saved.id}
+                  className="flex items-center gap-1 rounded-[1.5rem] bg-card p-2 pl-4 shadow-card ring-1 ring-navy/5"
+                >
+                  <Link
+                    to="/valor"
+                    search={{ card: c.id, saved: saved.id, amount: undefined }}
+                    className="group flex min-w-0 flex-1 items-center gap-3 py-2"
+                  >
+                    <CardBadge card={c} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-extrabold text-navy">{saved.nickname}</span>
+                      <span className="mt-0.5 block truncate text-sm text-muted-foreground">
+                        {c.name} · {maskNumber(saved.number)}
+                      </span>
+                    </span>
+                    <ArrowRight className="h-4 w-4 shrink-0 text-navy/30 transition group-hover:translate-x-0.5 group-hover:text-primary" />
+                  </Link>
+                  <button
+                    type="button"
+                    aria-label={`Remover ${saved.nickname}`}
+                    onClick={() => setPendingRemoval(saved.id)}
+                    className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-navy/45 transition hover:bg-destructive/10 hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <section>
         <div className="mb-5 flex items-center justify-between gap-4">
@@ -123,8 +288,8 @@ function Index() {
             return (
               <Link
                 key={id}
-                to="/valor"
-                search={{ card: id }}
+                to="/cartao"
+                search={{ card: id, saved: undefined }}
                 className="group flex overflow-hidden rounded-[1.5rem] bg-card shadow-card ring-1 ring-navy/5 transition duration-200 hover:-translate-y-0.5 hover:ring-primary/25"
               >
                 <span className="w-1.5 shrink-0 bg-primary" />
@@ -140,9 +305,6 @@ function Index() {
             );
           })}
         </div>
-        <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-          <DemoTag /> Opções ilustrativas para prototipagem; integrações não homologadas.
-        </p>
       </section>
 
       <section>

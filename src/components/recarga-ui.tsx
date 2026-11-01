@@ -65,10 +65,6 @@ export function AppShell({ children }: { children: ReactNode }) {
               </Link>
             ))}
           </nav>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-xs font-bold text-navy ring-1 ring-navy/10 md:hidden">
-            <span className="h-1.5 w-1.5 rounded-full bg-warning" />
-            Protótipo
-          </span>
         </div>
       </header>
       <main className={cn("mx-auto px-4 pt-8", wide ? "max-w-5xl" : "max-w-3xl")}>{children}</main>
@@ -174,16 +170,14 @@ export function DemoTag({ children = "Demonstrativo" }: { children?: ReactNode }
   );
 }
 
+export const primaryButtonClass =
+  "inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-primary px-5 font-bold text-primary-foreground shadow-[0_10px_22px_-14px_var(--primary)] transition hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none";
+
+export const secondaryButtonClass =
+  "inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-primary bg-card px-5 font-semibold text-primary transition hover:bg-secondary";
+
 export function PrimaryButton({ className, ...p }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  return (
-    <button
-      {...p}
-      className={cn(
-        "inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-primary px-5 font-bold text-primary-foreground shadow-[0_10px_22px_-14px_var(--primary)] transition hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none",
-        className,
-      )}
-    />
-  );
+  return <button {...p} className={cn(primaryButtonClass, className)} />;
 }
 
 export function SummaryRow({ label, value, strong }: { label: string; value: ReactNode; strong?: boolean }) {

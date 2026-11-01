@@ -8,6 +8,7 @@ O TanStack Start usa rotas por arquivo. Cada `.tsx` desta pasta é uma página. 
 | --- | --- |
 | `index.tsx` | `/` |
 | `cartoes.tsx` | `/cartoes` |
+| `cartao.tsx` | `/cartao` |
 | `valor.tsx` | `/valor` |
 | `pagamento.tsx` | `/pagamento` |
 | `confirmacao.tsx` | `/confirmacao` |

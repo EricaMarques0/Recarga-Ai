@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AjudaRouteImport } from './routes/ajuda'
+import { Route as CartaoRouteImport } from './routes/cartao'
 import { Route as CartoesRouteImport } from './routes/cartoes'
 import { Route as ConfirmacaoRouteImport } from './routes/confirmacao'
 import { Route as HistoricoRouteImport } from './routes/historico'
@@ -25,6 +26,11 @@ const IndexRoute = IndexRouteImport.update({
 const AjudaRoute = AjudaRouteImport.update({
   id: '/ajuda',
   path: '/ajuda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartaoRoute = CartaoRouteImport.update({
+  id: '/cartao',
+  path: '/cartao',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CartoesRoute = CartoesRouteImport.update({
@@ -56,6 +62,7 @@ const ValorRoute = ValorRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ajuda': typeof AjudaRoute
+  '/cartao': typeof CartaoRoute
   '/cartoes': typeof CartoesRoute
   '/confirmacao': typeof ConfirmacaoRoute
   '/historico': typeof HistoricoRoute
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ajuda': typeof AjudaRoute
+  '/cartao': typeof CartaoRoute
   '/cartoes': typeof CartoesRoute
   '/confirmacao': typeof ConfirmacaoRoute
   '/historico': typeof HistoricoRoute
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/ajuda': typeof AjudaRoute
+  '/cartao': typeof CartaoRoute
   '/cartoes': typeof CartoesRoute
   '/confirmacao': typeof ConfirmacaoRoute
   '/historico': typeof HistoricoRoute
@@ -86,6 +95,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/ajuda'
+    | '/cartao'
     | '/cartoes'
     | '/confirmacao'
     | '/historico'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/ajuda'
+    | '/cartao'
     | '/cartoes'
     | '/confirmacao'
     | '/historico'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/ajuda'
+    | '/cartao'
     | '/cartoes'
     | '/confirmacao'
     | '/historico'
@@ -114,6 +126,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AjudaRoute: typeof AjudaRoute
+  CartaoRoute: typeof CartaoRoute
   CartoesRoute: typeof CartoesRoute
   ConfirmacaoRoute: typeof ConfirmacaoRoute
   HistoricoRoute: typeof HistoricoRoute
@@ -135,6 +148,13 @@ declare module '@tanstack/react-router' {
       path: '/ajuda'
       fullPath: '/ajuda'
       preLoaderRoute: typeof AjudaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cartao': {
+      id: '/cartao'
+      path: '/cartao'
+      fullPath: '/cartao'
+      preLoaderRoute: typeof CartaoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cartoes': {
@@ -178,6 +198,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AjudaRoute: AjudaRoute,
+  CartaoRoute: CartaoRoute,
   CartoesRoute: CartoesRoute,
   ConfirmacaoRoute: ConfirmacaoRoute,
   HistoricoRoute: HistoricoRoute,

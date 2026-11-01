@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { CheckCircle2, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CARDS, type Category } from "@/lib/catalog";
-import { CardBadge, DemoTag, PageTitle, PrimaryButton, Steps } from "@/components/recarga-ui";
+import { CardBadge, PageTitle, PrimaryButton, Steps } from "@/components/recarga-ui";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/cartoes")({
@@ -43,7 +43,7 @@ function CardsPage() {
   return (
     <div>
       <Steps current={1} />
-      <PageTitle title="Qual cartão você quer recarregar?" />
+      <PageTitle title="Qual cartão você quer recarregar?" subtitle="Depois você informa o número e um apelido." />
       <div className="relative">
         <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
         <input
@@ -53,10 +53,12 @@ function CardsPage() {
           className="h-12 w-full rounded-xl border border-border bg-card pl-12 pr-4 outline-none focus:border-primary focus:ring-4 focus:ring-primary/10"
         />
       </div>
-      <div className="mt-3 flex gap-2 overflow-x-auto">
+      <div className="mt-3 flex gap-2 overflow-x-auto" role="group" aria-label="Filtrar por categoria">
         {FILTERS.map((f) => (
           <button
             key={f.id}
+            type="button"
+            aria-pressed={filter === f.id}
             onClick={() => setFilter(f.id)}
             className={cn(
               "shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition",
@@ -68,12 +70,13 @@ function CardsPage() {
         ))}
       </div>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-2" role="radiogroup">
+      <div className="mt-5 grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Cartões">
         {list.map((c) => {
           const on = selected === c.id;
           return (
             <button
               key={c.id}
+              type="button"
               role="radio"
               aria-checked={on}
               onClick={() => setSelected(c.id)}
@@ -95,10 +98,8 @@ function CardsPage() {
       {list.length === 0 && (
         <p className="card-surface mt-5 p-6 text-center text-sm text-muted-foreground">Nenhum cartão encontrado para “{q}”.</p>
       )}
-      <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground"><DemoTag /> Lista ilustrativa.</p>
-
       <div className="sticky bottom-20 mt-6 md:bottom-4">
-        <PrimaryButton disabled={!selected} onClick={() => navigate({ to: "/valor", search: { card: selected! } })}>
+        <PrimaryButton disabled={!selected} onClick={() => navigate({ to: "/cartao", search: { card: selected!, saved: undefined } })}>
           {selected ? "Continuar" : "Selecione um cartão"}
         </PrimaryButton>
       </div>

@@ -122,3 +122,24 @@
   border-radius: var(--radius);
   box-shadow: var(--shadow-card);
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #comprovante-print,
+  #comprovante-print * {
+    visibility: visible;
+  }
+
+  #comprovante-print {
+    display: block !important;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    padding: 24px;
+    background: white;
+    color: black;
+  }
+}

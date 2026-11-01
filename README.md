@@ -1,42 +1,44 @@
 # RecargaAí
 
-Protótipo de interface para recarregar cartões de transporte público da Grande São Paulo em um só lugar. A pessoa escolhe o cartão, define o valor e segue para um pagamento via Pix — tudo nesta demonstração, sem sair do fluxo.
-
-O RecargaAí não é um aplicativo de operadora e não processa pagamento de verdade. Cartões, histórico, QR Code e código Pix são ilustrativos. Nenhuma integração está homologada e nenhuma cobrança é gerada.
+Aplicativo para recarregar cartões de transporte público da Grande São Paulo em um só lugar. A pessoa escolhe o cartão, define o valor e paga via Pix, sem sair do fluxo.
 
 ## O que dá para fazer
 
-- Buscar um cartão por nome, cidade ou operadora.
+- Buscar um cartão por nome, cidade ou operadora, com sugestões enquanto digita.
 - Escolher entre cartões municipais e metropolitanos.
-- Definir um valor sugerido ou digitar outro valor.
-- Ver o resumo com taxa de conveniência zerada para o usuário.
-- Simular a espera, a confirmação e o comprovante de um Pix.
-- Consultar um histórico fictício e as perguntas frequentes.
+- Guardar apelido e número do cartão neste navegador.
+- Definir um valor sugerido ou digitar outro valor, dentro do limite daquele cartão.
+- Ver uma estimativa de viagens e o resumo com taxa de conveniência zerada.
+- Acompanhar o Pix com prazo, confirmação, expiração e novo código.
+- Repetir a última recarga confirmada.
+- Consultar o histórico deste aparelho, o comprovante e as perguntas frequentes.
 
 ## Fluxo
 
-1. Na página inicial, a busca envia o termo para a lista de cartões. Um cartão popular abre direto na escolha do valor.
-2. A pessoa seleciona o cartão e continua.
-3. Escolhe o valor e revisa o total.
-4. A tela de Pix mostra um QR Code ilustrativo e um código copia-e-cola simulado.
-5. O botão **Simular confirmação do pagamento** registra a operação nesta sessão e abre o resumo.
-6. O comprovante é um documento de demonstração, sem validade.
+1. Na página inicial, a busca sugere cartões e também envia o termo para a lista. Se já existe uma recarga confirmada, dá para repeti-la. Um Pix ainda no prazo aparece para continuar.
+2. A pessoa seleciona o tipo do cartão.
+3. Informa apelido e número. O cartão fica salvo neste navegador.
+4. Escolhe o valor, dentro do mínimo e do máximo daquele cartão, e revisa o total.
+5. A tela de Pix mostra o QR Code e o código copia-e-cola, com prazo de 5 minutos.
+6. **Já realizei o pagamento** registra a confirmação. Se o prazo acaba, **Gerar novo código Pix** abre outro código. Trocar o valor substitui o código anterior: só um Pix fica em aberto por cartão.
+7. A confirmação mostra a linha do tempo até a validação no cartão. O comprovante pode ser copiado ou impresso e entra no histórico deste aparelho.
 
-O histórico da tela **Histórico** não inclui as simulações feitas na sessão. Ele usa uma lista fixa de exemplo.
+O histórico começa vazio. Ele só lista as recargas feitas neste navegador. Dá para remover uma recarga ou limpar a lista; os cartões salvos permanecem.
 
 ## Páginas
 
 | Caminho | Arquivo | Função |
 | --- | --- | --- |
-| `/` | `src/routes/index.tsx` | Entrada, busca e cartões populares |
-| `/cartoes` | `src/routes/cartoes.tsx` | Busca, filtro e seleção do cartão |
+| `/` | `src/routes/index.tsx` | Entrada, busca, cartões salvos e repetir recarga |
+| `/cartoes` | `src/routes/cartoes.tsx` | Busca, filtro e seleção do tipo de cartão |
+| `/cartao` | `src/routes/cartao.tsx` | Apelido e número do cartão |
 | `/valor` | `src/routes/valor.tsx` | Valor da recarga e resumo |
-| `/pagamento` | `src/routes/pagamento.tsx` | Pix simulado |
-| `/confirmacao` | `src/routes/confirmacao.tsx` | Resumo e comprovante demonstrativo |
-| `/historico` | `src/routes/historico.tsx` | Recargas de exemplo |
+| `/pagamento` | `src/routes/pagamento.tsx` | Pix, com prazo |
+| `/confirmacao` | `src/routes/confirmacao.tsx` | Linha do tempo e comprovante |
+| `/historico` | `src/routes/historico.tsx` | Recargas deste aparelho |
 | `/ajuda` | `src/routes/ajuda.tsx` | Perguntas frequentes |
 
-A busca usa o parâmetro `q`. O cartão escolhido segue em `card`, e o valor em `amount`. Se o cartão ou o valor não forem válidos, o fluxo volta para a lista ou para o início.
+A busca usa o parâmetro `q`. O tipo do cartão segue em `card`, o cartão salvo em `saved` e o valor em `amount`. O Pix e a confirmação usam o identificador `id`. Se o tipo não existir, o fluxo volta para a lista.
 
 ## Cartões de exemplo
 
@@ -53,10 +55,10 @@ Os cinco primeiros aparecem como cartões populares na página inicial. A lista 
 
 ## Valor da recarga
 
-- Sugestões: R$ 20, R$ 30, R$ 50 e R$ 100.
-- Mínimo: R$ 5.
-- Máximo: R$ 500.
+- Sugestões: R$ 20, R$ 30, R$ 50 e R$ 100, quando couberem no cartão.
+- Cada cartão tem mínimo e máximo próprios. Fora de um cartão específico, a faixa geral continua de R$ 5 a R$ 500.
 - A taxa de conveniência exibida para o usuário é sempre R$ 0.
+- Uma tarifa de referência estima quantas viagens o valor cobre. Não é a tarifa vigente da operadora.
 
 Valores vazios, inválidos ou fora da faixa mostram uma mensagem e não seguem para o pagamento.
 
@@ -127,7 +129,8 @@ src/
     recarga-ui.tsx    interface compartilhada do RecargaAí
     ui/               componentes de base
   lib/
-    catalog.ts        cartões, valores, histórico e formatação em real
+    catalog.ts        cartões, limites, validação e formatação em real
+    wallet.ts         cartões salvos e recargas deste navegador
   routes/             uma rota por arquivo
   test/               testes de valor e de roteamento
 public/               favicon e robots.txt
@@ -137,14 +140,15 @@ public/               favicon e robots.txt
 
 ## Testes
 
-`src/test/amount.test.ts` cobre a validação de valor: vazio, abaixo do mínimo, acima do máximo e decimal com vírgula.
+`src/test/amount.test.ts` cobre valor, apelido, número do cartão e a estimativa de viagens.
 
-`src/test/app-routing.test.tsx` verifica se a página inicial corresponde a uma rota, em vez de cair na página de não encontrado.
+`src/test/wallet.test.ts` cobre cartão salvo, confirmação do Pix, expiração e reaproveitamento de um código em aberto.
+
+`src/test/app-routing.test.tsx` verifica se a página inicial e a identificação do cartão correspondem a rotas, em vez de caírem na página de não encontrado.
 
 ## Limitações
 
-- Não há conta, login nem persistência das recargas simuladas.
-- O QR Code não é um código Pix válido.
-- O código copia-e-cola começa com `DEMO-PIX` e não deve ser pago.
-- O comprovante não tem validade fiscal nem operacional.
-- A disponibilização de crédito no cartão físico não é simulada além do texto de orientação.
+- Não há conta nem login. Apelido, número e histórico ficam neste navegador.
+- O código Pix vale 5 minutos. Depois disso a recarga fica expirada.
+- Cada tipo de cartão tem o próprio tamanho de número e os próprios limites de valor.
+- Uma tarifa de referência estima as viagens. Ela não substitui a tarifa da operadora.
